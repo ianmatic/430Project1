@@ -55,8 +55,9 @@
         }
       }
     };
-    // Send Request function for addUser
+    // Send Request function for adding a form
     const sendPOST = (e, form) => {
+      // create Ajax
       const xhr = new XMLHttpRequest();
       xhr.open(form.getAttribute('method'), form.getAttribute('action'));
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
@@ -65,10 +66,14 @@
       // Handle response once we receive it, and parse it
       xhr.onload = () => handleResponse(xhr, true);
     
-      const data = `name=${form.querySelector('#nameField').value}&age=${form.querySelector('#ageField').value}`;
+      const data = `name=${form.querySelector('#nameField').value}
+                    &type=${form.querySelector('#typeField').value}
+                    &year=${form.querySelector('#yearField').value}
+                    &image=${form.querySelector('#imageField').value}`;
       // Send Request
       xhr.send(data);
 
+      // prevent default browser behavior
       e.preventDefault();
       return false;
     };
@@ -92,18 +97,20 @@
       e.preventDefault();
       return false;
     };
+
+    // Get Forms and setup listeners
     const init = () => {  
       // Get DOM elements
-      const userForm = document.querySelector('#userForm');
-      const nameForm = document.querySelector('#nameForm');
+      const addContentForm = document.querySelector('#addForm');
+      const getContentForm = document.querySelector('#getForm');
 
       // Set DOM on submit functions
-      const getUsers = (e) => requestUpdate(e, userForm);
-      const addUser = (e) => sendPOST(e, nameForm);
+      const addListener= (e) => sendPOST(e, addContentForm);
+      const getListener = (e) => requestUpdate(e, getContentForm);
 
       // Set DOM listeners
-      userForm.addEventListener('submit', getUsers);
-      nameForm.addEventListener('submit', addUser);
+      addContentForm.addEventListener('submit', addListener);
+      getContentForm.addEventListener('submit', getListener);
     };
     window.onload = init;
   </script>
@@ -111,25 +118,56 @@
 
 <body>
   <section id="top">
-    <h3>POST Status Code Tests</h3>
-    <form id="nameForm" action="/addUser" method="post">
-      <label for="name">Name: </label>
-      <input id="nameField" type="text" name="name" />
-      <label for="age">Age: </label>
-      <input id="ageField" type="number" name="age" min="0" max="100" step="1" />
-      <input type="submit" value="Add User" />
-    </form>
-    <form id="userForm" action="/getUsers" method="get">
-      <select id='urlField'>
-        <option value='/getUsers'>/getUsers</option>
-        <option value='/notReal'>/notReal</option>
-      </select>
-      <select id="methodSelect">
-        <option value="get">GET</option>
-        <option value="head">HEAD</option>
-      </select>
-      <input type="submit" value="Get User" />
-    </form>
+    <h3>Entertainment Tracker</h3>
+    <div>
+      <h5>Add Content</h5>
+      <!--Form to add content-->
+      <form id="addForm" action="/addContent" method="post">
+        <!--Name-->
+        <label for="name">Name*: </label>
+        <input id="nameField" type="text" name="name" required />
+        <!--Type-->
+        <label for="type">Type*: </label>
+        <select id="typeField" name="type" required>
+          <option value="film">Film</option>
+          <option value="tv">TV</option>
+          <option value="game">Game</option>
+          <option value="literature">Literature</option>
+          <option value="literature">Music</option>
+          <option value="other">Other</option>
+        </select>
+        <div id="otherContainer">
+          <label for="other">Please Specify: </label>
+          <input id="otherField" type="text" name="other">
+        </div>
+        <!--Year-->
+        <label for="year">Year: </label>
+        <input id="yearField" type="text" name="year" />
+        <!--Image-->
+        <label for="image">Image: </label>
+        <input id="imageField" type="file" name="image">
+        <!--Add Content-->
+        <input type="submit" value="Add Content">
+      </form>
+    </div>
+    <div>
+      <h5>Get Content</h5>
+      <!--Form to get content-->
+      <form id="getForm" action="/getContent" method="get">
+        <label for="getType">Type: </label>
+        <select id="getTypeField" name="getType">
+          <option value="all">All</option>
+          <option value="film">Film</option>
+          <option value="tv">TV</option>
+          <option value="game">Game</option>
+          <option value="literature">Literature</option>
+          <option value="literature">Music</option>
+          <option value="other">Other</option>
+        </select>
+        <!--Get Content-->
+        <input type="submit" value="Get Content">
+      </form>
+    </div>
   </section>
   <section id="content">
   </section>
