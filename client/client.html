@@ -6,52 +6,46 @@
   <link rel="stylesheet" type="text/css" href="/style.css">
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script type="text/babel">
+
+document.querySelector("#typeField").addEventListener('change', () => {
+  if (document.querySelector("#typeField").value === "other") {
+    document.querySelector("#otherContainer").style.display = "block";
+  } else {
+    document.querySelector("#otherContainer").style.display = "none";
+  }
+});
+
+let lastIndex = 0;
  // Function that handles response sent back from server
- const handleResponse = (xhr, shouldParse) => {
+ const handleResponse = (xhr, shouldDisplay) => {
       const content = document.querySelector("#content");
       console.log(xhr.status);
 
-      switch(xhr.status) {
-        case 200:
-          content.innerHTML = `<b>Success</b>`;
-          break;
-        case 201:
-          content.innerHTML = `<b>Create</b>`;
-          break;
-        case 204:
-          content.innerHTML = `<b>Updated (No Content)</b>`;
-          return;
-        case 304:
-          content.innerHTML = `<b>Not Modified</b>`;
-          break;
-        case 400:
-          content.innerHTML = `<b>Bad Request</b>`;
-          break;
-        case 404:
-          content.innerHTML = `<b>Resource Not Found</b>`;
-          break;
-        default:
-          content.innerHTML = `Error code not implemented by client.`;
-          break;
-      }
-
-      if (shouldParse) {
+      if (shouldDisplay) {
         // Note - empty for 204
         const obj = JSON.parse(xhr.response);
         console.dir(obj);
 
         // display message
-        if (obj.message) {
-          const pElem = document.createElement('p');
-          pElem.innerHTML = `Message: ${obj.message}`;
-          content.appendChild(pElem);
+        let tableRows = [];
+        
+        // create response # of rows
+        for (let i = lastIndex; i < Object.keys(obj).length; i++) {
+          let tr = document.createElement("tr");
+              // fill each row with 4 columns
+              for (let j= 0; j < Object.keys(obj[i]).length; j++) {
+                let tableData = document.createElement("td");
+                tableData.innerHTML = Object.values(obj[i])[j];
+                tr.appendChild(tableData);
+              }
+          tableRows.push(tr);
         }
-        // display users
-        if (obj.users) {
-          const pElem = document.createElement('p');
-          pElem.innerHTML = JSON.stringify(obj.users);
-          content.appendChild(pElem);
+        lastIndex = Object.keys(obj).length;
+        //attach each row to the table
+        for (let i = 0; i < tableRows.length; i++) {
+          document.querySelector("table").appendChild(tableRows[i]);
         }
       }
     };
@@ -64,12 +58,16 @@
       xhr.setRequestHeader ('Accept', 'application/json');
       
       // Handle response once we receive it, and parse it
-      xhr.onload = () => handleResponse(xhr, true);
+      xhr.onload = () => handleResponse(xhr, false);
     
-      const data = `name=${form.querySelector('#nameField').value}
-                    &type=${form.querySelector('#typeField').value}
-                    &year=${form.querySelector('#yearField').value}
-                    &image=${form.querySelector('#imageField').value}`;
+      const typeField = form.querySelector('#typeField');
+
+      // if other is selected, use other, otherwise use type
+      const typeValue = typeField.value === "other" && form.querySelector("#otherField").value || typeField.value;
+      const data = `name=${form.querySelector('#nameField').value.trim()}
+                    &type=${typeValue.trim()}
+                    &year=${form.querySelector('#yearField').value.trim()}
+                    &image=${form.querySelector('#imageField').value.trim()}`;
       // Send Request
       xhr.send(data);
 
@@ -81,8 +79,8 @@
     //Send request function for getUsers
     const requestUpdate = (e, form) => {
       const xhr = new XMLHttpRequest();
-      const url = userForm.querySelector('#urlField').value;
-      const method = userForm.querySelector('#methodSelect').value;
+      const url = '/getContent';
+      const method ='get';
       xhr.open(method, url);
       xhr.setRequestHeader('Accept', 'application/json');
 
@@ -142,7 +140,7 @@
         </div>
         <!--Year-->
         <label for="year">Year: </label>
-        <input id="yearField" type="text" name="year" />
+        <input id="yearField" type="number" name="year" />
         <!--Image-->
         <label for="image">Image: </label>
         <input id="imageField" type="file" name="image">
@@ -170,6 +168,14 @@
     </div>
   </section>
   <section id="content">
+    <table>
+      <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Year</th>
+          <th>Image</th>
+      </tr>
+    </table>
   </section>
 </body>
 

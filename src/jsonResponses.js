@@ -1,4 +1,5 @@
-const users = {};
+const content = {};
+let counter = 0;
 // Function that sends the response JSON back to the client
 const respondJSON = (request, response, status, object) => {
   // Send back response JSON to client
@@ -13,31 +14,34 @@ const respondJSONMeta = (request, response, status) => {
   response.end();
 };
 
-// return users as JSON
-const getUsers = (request, response) => respondJSON(request, response, 200, { users });
+// return content as JSON
+const getContent = (request, response) => respondJSON(request, response, 200, content);
 
-const getUsersMeta = (request, response) => respondJSONMeta(request, response, 200);
+const getContentMeta = (request, response) => respondJSONMeta(request, response, 200);
 
-const addUser = (request, response, body) => {
+const addContent = (request, response, body) => {
   const responseJSON = {
     message: 'Name and age are both required.',
   };
   let responseCode = 201;
 
   // Check for missing params
-  if (!body.age || !body.name) {
+  if (!body.name || !body.type) {
     responseJSON.id = 'missingParams';
     return respondJSON(request, response, 400, responseJSON);
   }
 
-  if (users[body.name]) {
+  if (content[counter]) {
     responseCode = 204;
   } else {
-    users[body.name] = {};
+    content[counter] = {};
   }
 
-  users[body.name].name = body.name;
-  users[body.name].age = body.age;
+  content[counter].name = body.name;
+  content[counter].type = body.type;
+  content[counter].year = body.year || "N/A";
+  content[counter].image = body.image || "N/A";
+  counter++;
 
   if (responseCode === 201) {
     responseJSON.message = 'Created Successfully';
@@ -62,9 +66,9 @@ const notFoundMeta = (request, response) => {
 
 
 module.exports = {
-  getUsers,
-  getUsersMeta,
-  addUser,
+  getContent,
+  getContentMeta,
+  addContent,
   notFound,
   notFoundMeta,
 };

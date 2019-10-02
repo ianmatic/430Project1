@@ -6,8 +6,9 @@ const jsonHandler = require('./jsonResponses.js');
 
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
+// handle data sent from client
 const handlePost = (request, response, parsedUrl) => {
-  if (parsedUrl.pathname === '/addUser') {
+  if (parsedUrl.pathname === '/addContent') {
     const tempResponse = response;
     let body = [];
 
@@ -25,7 +26,8 @@ const handlePost = (request, response, parsedUrl) => {
     // end of upload stream.
     request.on('end', () => {
       body = query.parse(Buffer.concat(body).toString());
-      jsonHandler.addUser(request, tempResponse, body);
+      console.log(body);
+      jsonHandler.addContent(request, tempResponse, body);
     });
   }
 };
@@ -40,16 +42,16 @@ const onRequest = (request, response) => {
         htmlHandler.getIndex(request, response);
       } else if (parsedUrl.pathname === '/style.css') {
         htmlHandler.getCSS(request, response);
-      } else if (parsedUrl.pathname === '/getUsers') {
-        jsonHandler.getUsers(request, response);
+      } else if (parsedUrl.pathname === '/getContent') {
+        jsonHandler.getContent(request, response);
       } else {
         // 404
         jsonHandler.notFound(request, response);
       }
       break;
     case 'HEAD':
-      if (parsedUrl.pathname === '/getUsers') {
-        jsonHandler.getUsersMeta(request, response);
+      if (parsedUrl.pathname === '/getContent') {
+        jsonHandler.getContentMeta(request, response);
       } else {
         // 404
         jsonHandler.notFoundMeta(request, response);
