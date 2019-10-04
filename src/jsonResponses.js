@@ -1,18 +1,18 @@
 const content = {};
 let counter = 0;
 // Function that sends the response JSON back to the client
-const respondJSON = (request, response, status, content, lastIndex) => {
+const respondJSON = (request, response, status, obj, lastIndex) => {
   // Send back response JSON to client
   response.writeHead(status, { 'Content-Type': 'application/json' });
-  const jsonObj = JSON.stringify(content);
-  let filteredObj = {}; 
+  const jsonObj = JSON.stringify(obj);
+  const filteredObj = {};
   // only get new data, lastIndex is the index of the last data fetched
-  console.log("length " + Object.keys(content).length);
-  console.log("lastIndex " + Number(lastIndex));
-  console.log("content " + jsonObj);
-  for (let i = Number(lastIndex); i < Object.keys(content).length; i++) {
-    console.log('looping ' + content[i]);
-    filteredObj[i] =  content[i];
+  console.log(`length ${Object.keys(obj).length}`);
+  console.log(`lastIndex ${Number(lastIndex)}`);
+  console.log(`content ${jsonObj}`);
+  for (let i = Number(lastIndex); i < Object.keys(obj).length; i++) {
+    console.log(`looping ${obj[i]}`);
+    filteredObj[i] = obj[i];
   }
   response.write(JSON.stringify(filteredObj));
 
@@ -26,7 +26,7 @@ const respondJSONMeta = (request, response, status) => {
 };
 
 // return content as JSON
-const getContent = (request, response, param) => respondJSON(request, response, 200, content, param);
+const getContent = (req, res, param) => respondJSON(req, res, 200, content, param);
 
 const getContentMeta = (request, response) => respondJSONMeta(request, response, 200);
 
@@ -50,8 +50,8 @@ const addContent = (request, response, body) => {
 
   content[counter].name = body.name;
   content[counter].type = body.type;
-  content[counter].year = body.year || "N/A";
-  content[counter].image = body.image || "N/A";
+  content[counter].year = body.year || 'N/A';
+  content[counter].image = body.image || 'N/A';
   counter++;
 
   if (responseCode === 201) {
