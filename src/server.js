@@ -26,7 +26,7 @@ const handlePost = (request, response, parsedUrl) => {
     // end of upload stream.
     request.on('end', () => {
       body = query.parse(Buffer.concat(body).toString());
-      console.log(body);
+
       jsonHandler.addContent(request, tempResponse, body);
     });
   }
@@ -35,6 +35,7 @@ const handlePost = (request, response, parsedUrl) => {
 // Function that handles requests from client
 const onRequest = (request, response) => {
   const parsedUrl = url.parse(request.url);
+  let body = [];
 
   switch (request.method) {
     case 'GET':
@@ -42,8 +43,8 @@ const onRequest = (request, response) => {
         htmlHandler.getIndex(request, response);
       } else if (parsedUrl.pathname === '/style.css') {
         htmlHandler.getCSS(request, response);
-      } else if (parsedUrl.pathname === '/getContent') {
-        jsonHandler.getContent(request, response);
+      } else if (parsedUrl.pathname === '/getContent') {   
+        jsonHandler.getContent(request, response, parsedUrl.query.split('=').pop());
       } else {
         // 404
         jsonHandler.notFound(request, response);

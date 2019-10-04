@@ -1,10 +1,21 @@
 const content = {};
 let counter = 0;
 // Function that sends the response JSON back to the client
-const respondJSON = (request, response, status, object) => {
+const respondJSON = (request, response, status, content, lastIndex) => {
   // Send back response JSON to client
   response.writeHead(status, { 'Content-Type': 'application/json' });
-  response.write(JSON.stringify(object));
+  const jsonObj = JSON.stringify(content);
+  let filteredObj = {}; 
+  // only get new data, lastIndex is the index of the last data fetched
+  console.log("length " + Object.keys(content).length);
+  console.log("lastIndex " + Number(lastIndex));
+  console.log("content " + jsonObj);
+  for (let i = Number(lastIndex); i < Object.keys(content).length; i++) {
+    console.log('looping ' + content[i]);
+    filteredObj[i] =  content[i];
+  }
+  response.write(JSON.stringify(filteredObj));
+
   response.end();
 };
 
@@ -15,7 +26,7 @@ const respondJSONMeta = (request, response, status) => {
 };
 
 // return content as JSON
-const getContent = (request, response) => respondJSON(request, response, 200, content);
+const getContent = (request, response, param) => respondJSON(request, response, 200, content, param);
 
 const getContentMeta = (request, response) => respondJSONMeta(request, response, 200);
 

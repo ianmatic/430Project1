@@ -14,8 +14,12 @@ html, body {
   font-size: 2em;
 }
 
-#otherContainer {
+#otherContainer, #getOtherContainer {
   display: none;
+}
+
+th {
+  cursor: pointer;
 }
 
 #content {

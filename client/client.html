@@ -17,36 +17,147 @@ document.querySelector("#typeField").addEventListener('change', () => {
   }
 });
 
+document.querySelector("#getTypeField").addEventListener('change', () => {
+  if (document.querySelector("#getTypeField").value === "other") {
+    document.querySelector("#getOtherContainer").style.display = "block";
+  } else {
+    document.querySelector("#getOtherContainer").style.display = "none";
+  }
+});
+
+document.querySelector("#nameHeader").addEventListener('click', () => {
+  sortContent(0);
+});
+document.querySelector("#typeHeader").addEventListener('click', () => {
+  sortContent(1);
+});
+document.querySelector("#yearHeader").addEventListener('click', () => {
+  sortContent(2);
+});
+// don't sort by image
+
+// used W3 for reference algo https://www.w3schools.com/howto/howto_js_sort_table.asp
+// column is number, order is string
+function sortContent(column) {
+  const table = document.querySelector("table");
+  // sort only if multiple rows (not including header row)
+  if (table.rows.length > 2) {
+    let rows, i, switchRows;
+    
+    let switchCount = 0;
+    let sorting = true;
+    let direction = "ascending";
+
+    // loop until no more sorting
+    while (sorting) {
+      sorting = false;
+      rows = table.rows;
+
+      // check each row (0 is undefined for prev and 1 is header for prev)
+      for (i = 2; i < rows.length; i++) {
+
+        switchRows = false;
+        let previousRow = rows[i - 1].querySelectorAll("td")[column];
+        let currentRow = rows[i].querySelectorAll("td")[column];
+
+        // sort by number
+        if (column == 2) {
+          // ascending order
+          if (direction === "ascending" && Number(previousRow.innerHTML) > Number(currentRow.innerHTML)) {
+            switchRows = true;
+            break;
+          //descending order
+          } 
+          else if (direction === "descending" && Number(previousRow.innerHTML) < Number(currentRow.innerHTML)) {
+            switchRows = true;
+            break;
+          }
+        } 
+        // sort by string
+        else {
+          // ascending order
+          if (direction === "ascending" && previousRow.innerHTML.toLowerCase() > currentRow.innerHTML.toLowerCase()) {
+            console.log("sort ascending");
+            switchRows = true;
+            break;
+          //descending order
+          } 
+          else if (direction === "descending" && previousRow.innerHTML.toLowerCase() < currentRow.innerHTML.toLowerCase()) {
+            console.log("sort descending");
+            switchRows = true;
+            break;
+          }
+        }
+      }
+
+      // prev is bigger, so move curr to before prev (swap spots)
+      if (switchRows) {
+        rows[i - 1].parentNode.insertBefore(rows[i], rows[i - 1]);
+        // haven't finished sorting, so keep looping
+        sorting = true;
+        switchCount++;
+      } else if (switchCount === 0 && direction == "ascending") {
+          // nothing to sort in ascending order, so try descending order
+          direction = "descending";
+          sorting = true;
+      }
+    }
+  }
+}
+
+function filterRowsByType(type) {
+  let table = document.querySelector("table");
+
+  // skip header
+  for (let i = 1; i < table.rows.length; i++) {
+    console.log(type);
+    // all visible
+    if (type == "all") {
+      table.rows[i].style.display = "table-row";
+    } // enable rows of type
+    else if (table.rows[i].cells[1].innerHTML.toLowerCase().trim() === type.toLowerCase()) {
+      table.rows[i].style.display = "table-row";
+    } // disable rows not of type 
+    else {
+      table.rows[i].style.display = "none";
+    }
+  }
+}
+
 let lastIndex = 0;
  // Function that handles response sent back from server
  const handleResponse = (xhr, shouldDisplay) => {
       const content = document.querySelector("#content");
+      let table = document.querySelector("table");
       console.log(xhr.status);
 
       if (shouldDisplay) {
         // Note - empty for 204
         const obj = JSON.parse(xhr.response);
-        console.dir(obj);
+        console.log(obj);
 
         // display message
         let tableRows = [];
         
         // create response # of rows
-        for (let i = lastIndex; i < Object.keys(obj).length; i++) {
+        for (let i = lastIndex; i < Object.keys(obj).length + lastIndex; i++) {
           let tr = document.createElement("tr");
-              // fill each row with 4 columns
-              for (let j= 0; j < Object.keys(obj[i]).length; j++) {
-                let tableData = document.createElement("td");
-                tableData.innerHTML = Object.values(obj[i])[j];
-                tr.appendChild(tableData);
-              }
-          tableRows.push(tr);
+            // fill each row with 4 columns
+            for (let j= 0; j < Object.keys(obj[i]).length; j++) {
+              let tableData = document.createElement("td");
+              tableData.innerHTML = Object.values(obj[i])[j];
+              tr.appendChild(tableData);
+            }
+          //attach each row to the table
+          table.appendChild(tr);
         }
-        lastIndex = Object.keys(obj).length;
-        //attach each row to the table
-        for (let i = 0; i < tableRows.length; i++) {
-          document.querySelector("table").appendChild(tableRows[i]);
-        }
+
+        // -1 to compensate for header row
+        lastIndex = table.rows.length - 1;
+
+        const getTypeField = document.querySelector('#getTypeField');
+        const getTypeValue = getTypeField.value === "other" && document.querySelector("#getOtherField").value || getTypeField.value; 
+        filterRowsByType(getTypeValue);
       }
     };
     // Send Request function for adding a form
@@ -75,12 +186,12 @@ let lastIndex = 0;
       e.preventDefault();
       return false;
     };
-
     //Send request function for getUsers
     const requestUpdate = (e, form) => {
       const xhr = new XMLHttpRequest();
-      const url = '/getContent';
       const method ='get';
+      const url = '/getContent?index=' + lastIndex;
+      console.log(url);
       xhr.open(method, url);
       xhr.setRequestHeader('Accept', 'application/json');
 
@@ -95,6 +206,7 @@ let lastIndex = 0;
       e.preventDefault();
       return false;
     };
+
 
     // Get Forms and setup listeners
     const init = () => {  
@@ -131,7 +243,7 @@ let lastIndex = 0;
           <option value="tv">TV</option>
           <option value="game">Game</option>
           <option value="literature">Literature</option>
-          <option value="literature">Music</option>
+          <option value="music">Music</option>
           <option value="other">Other</option>
         </select>
         <div id="otherContainer">
@@ -159,9 +271,13 @@ let lastIndex = 0;
           <option value="tv">TV</option>
           <option value="game">Game</option>
           <option value="literature">Literature</option>
-          <option value="literature">Music</option>
+          <option value="music">Music</option>
           <option value="other">Other</option>
         </select>
+        <div id="getOtherContainer">
+          <label for="getOther">Please Specify: </label>
+          <input id="getOtherField" type="text" name="getOther">
+        </div>
         <!--Get Content-->
         <input type="submit" value="Get Content">
       </form>
@@ -170,10 +286,10 @@ let lastIndex = 0;
   <section id="content">
     <table>
       <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Year</th>
-          <th>Image</th>
+        <th id="nameHeader">Name</th>
+        <th id="typeHeader">Type</th>
+        <th id="yearHeader">Year</th>
+        <th id="imageHeader">Image</th>
       </tr>
     </table>
   </section>
