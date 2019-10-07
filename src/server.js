@@ -84,6 +84,8 @@ const onRequest = (request, response) => {
         htmlHandler.getIndex(request, response);
       } else if (parsedUrl.pathname === '/style.css') {
         htmlHandler.getCSS(request, response);
+      } else if (parsedUrl.pathname === '/script.js') {
+        htmlHandler.getJS(request, response);
       } else if (parsedUrl.pathname === '/getContent') {
         jsonHandler.getContent(request, response, parsedUrl.query.split('=').pop());
       } else {
