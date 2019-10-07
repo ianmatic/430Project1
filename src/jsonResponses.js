@@ -1,21 +1,45 @@
 const content = {};
 let counter = 0;
 // Function that sends the response JSON back to the client
-const respondJSON = (request, response, status, obj, lastIndex) => {
+const respondJSON = (request, response, status, obj, nextIndex) => {
   // Send back response JSON to client
   response.writeHead(status, { 'Content-Type': 'application/json' });
   const jsonObj = JSON.stringify(obj);
   const filteredObj = {};
-  // only get new data, lastIndex is the index of the last data fetched
+  // only get new data, nextIndex is the index of the last data fetched
   console.log(`length ${Object.keys(obj).length}`);
-  console.log(`lastIndex ${Number(lastIndex)}`);
+  console.log(`nextIndex ${Number(nextIndex)}`);
   console.log(`content ${jsonObj}`);
-  for (let i = Number(lastIndex); i < Object.keys(obj).length; i++) {
-    console.log(`looping ${obj[i]}`);
-    filteredObj[i] = obj[i];
-  }
+
+  Object.keys(obj).forEach((element) => {
+    if (element >= nextIndex) {
+      filteredObj[element] = obj[element];
+    }
+  });
+  // for (let i = Number(nextIndex); i < Object.keys(obj).length; i++) {
+  //   console.log(`looping ${obj[i]}`);
+  //   filteredObj[i] = obj[i];
+  // }
   response.write(JSON.stringify(filteredObj));
 
+  response.end();
+};
+
+const respondUpdateJSON = (request, response, status, obj, uniqueid) => {
+  // Send back response JSON to client
+  const jsonObj = obj;
+  jsonObj.uniqueid = uniqueid;
+  response.writeHead(status, { 'Content-Type': 'application/json' });
+  response.write(JSON.stringify(jsonObj));
+  response.end();
+};
+
+const respondRemoveJSON = (request, response, status, uniqueid) => {
+  // Send back response JSON to client
+  const jsonObj = {};
+  jsonObj.uniqueid = uniqueid;
+  response.writeHead(status, { 'Content-Type': 'application/json' });
+  response.write(JSON.stringify(jsonObj));
   response.end();
 };
 
@@ -37,7 +61,7 @@ const addContent = (request, response, body) => {
   let responseCode = 201;
 
   // Check for missing params
-  if (!body.name || !body.type) {
+  if (!body.name || !body.type || !body.status) {
     responseJSON.id = 'missingParams';
     return respondJSON(request, response, 400, responseJSON);
   }
@@ -52,6 +76,7 @@ const addContent = (request, response, body) => {
   content[counter].type = body.type;
   content[counter].year = body.year || 'N/A';
   content[counter].image = body.image || 'N/A';
+  content[counter].status = body.status;
   counter++;
 
   if (responseCode === 201) {
@@ -60,6 +85,21 @@ const addContent = (request, response, body) => {
   }
 
   return respondJSONMeta(request, response, responseCode);
+};
+
+const updateContent = (request, response, body) => {
+  content[body.uniqueid].name = body.name;
+  content[body.uniqueid].type = body.type;
+  content[body.uniqueid].year = body.year || 'N/A';
+  content[body.uniqueid].image = body.image || 'N/A';
+  content[body.uniqueid].status = body.status;
+
+  return respondUpdateJSON(request, response, 201, content[body.uniqueid], body.uniqueid);
+};
+
+const removeContent = (request, response, body) => {
+  delete content[body.uniqueid];
+  return respondRemoveJSON(request, response, 201, body.uniqueid);
 };
 
 const notFound = (request, response) => {
@@ -80,6 +120,8 @@ module.exports = {
   getContent,
   getContentMeta,
   addContent,
+  updateContent,
+  removeContent,
   notFound,
   notFoundMeta,
 };

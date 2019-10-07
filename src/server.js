@@ -29,6 +29,48 @@ const handlePost = (request, response, parsedUrl) => {
 
       jsonHandler.addContent(request, tempResponse, body);
     });
+  } else if (parsedUrl.pathname === '/updateContent') {
+    const tempResponse = response;
+    let body = [];
+
+    // error in upload stream
+    request.on('error', (err) => {
+      console.dir(err);
+      tempResponse.statusCode = 400;
+      tempResponse.end();
+    });
+
+    request.on('data', (chunk) => {
+      body.push(chunk);
+    });
+
+    // end of upload stream.
+    request.on('end', () => {
+      body = query.parse(Buffer.concat(body).toString());
+
+      jsonHandler.updateContent(request, tempResponse, body);
+    });
+  } else if (parsedUrl.pathname === '/removeContent') {
+    const tempResponse = response;
+    let body = [];
+
+    // error in upload stream
+    request.on('error', (err) => {
+      console.dir(err);
+      tempResponse.statusCode = 400;
+      tempResponse.end();
+    });
+
+    request.on('data', (chunk) => {
+      body.push(chunk);
+    });
+
+    // end of upload stream.
+    request.on('end', () => {
+      body = query.parse(Buffer.concat(body).toString());
+
+      jsonHandler.removeContent(request, tempResponse, body);
+    });
   }
 };
 
