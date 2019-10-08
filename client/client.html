@@ -12,91 +12,134 @@
 
 <body>
   <div id="top">
-    <img id="logo"
-      src="https://tomfosterctp.files.wordpress.com/2016/04/adobe-cc-world-vector-logo-screenshot.png?w=660" alt="logo">
-    <h1 id="title">Entertainment Tracker</h1>
+    <div id="logoWrapper">
+      <img id="logo" src="/logo" alt="logo">
+      <h1 id="title">Media Tracker</h1>
+    </div>
     <i id="userIcon" class="fas fa-user"></i>
   </div>
   <div id="controls">
     <div id="addContentContainer">
-      <h5>Add Content</h5>
+      <h5 class="controlsTitle">Add Content</h5>
       <!--Form to add content-->
       <form id="addForm" action="/addContent" method="post">
         <!--Name-->
-        <label for="name">Name*: </label>
-        <input id="nameField" type="text" name="name" required />
+        <div class="form-group row inputField">
+          <label for="name" class="col-2 col-form-label">Name*: </label>
+          <div class="col-6">
+            <input class="form-control" id="nameField" type="text" name="name" placeholder="Name" required />
+          </div>
+        </div>
         <!--Type-->
-        <label for="type">Type*: </label>
-        <select id="typeField" name="type" required>
-          <option value="film">Film</option>
-          <option value="tv">TV</option>
-          <option value="game">Game</option>
-          <option value="literature">Literature</option>
-          <option value="music">Music</option>
-          <option value="other">Other</option>
-        </select>
-        <div id="otherContainer">
-          <label for="other">Please Specify: </label>
-          <input id="otherField" type="text" name="other">
+        <div class="form-group row inputField">
+          <label class="col-2 col-form-label" for="type">Type*: </label>
+          <div class="col-4">
+            <select class="custom-select" id="typeField" name="type" required>
+              <option value="film">Film</option>
+              <option value="tv">TV</option>
+              <option value="game">Game</option>
+              <option value="literature">Literature</option>
+              <option value="music">Music</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="col-5" id="otherContainer">
+            <!-- <label for="other">Other: </label> -->
+            <input class="form-control" id="otherField" type="text" name="other" placeholder="Other" disabled>
+          </div>
         </div>
         <!--Status-->
-        <label for="status">Status*: </label>
-        <select id="statusField" name="status" required>
-          <option class="wishList" value="wishList" selected>Wishlist</option>
-          <option class="inProgress" value="inProgress">In Progress</option>
-          <option class="complete" value="complete">Complete</option>
-        </select>
+        <div class="form-group row inputField">
+          <label class="col-2 col-form-label" for="status">Status*: </label>
+          <div class="col-6">
+            <select class="custom-select" id="statusField" name="status" required>
+              <option class="wishList" value="wishList" selected>Wishlist</option>
+              <option class="inProgress" value="inProgress">In Progress</option>
+              <option class="complete" value="complete">Complete</option>
+            </select>
+          </div>
+        </div>
         <!--Year-->
-        <label for="year">Year: </label>
-        <input id="yearField" type="number" name="year" />
+        <div class="form-group row inputField">
+          <label class="col-2 col-form-label" for="year">Year: </label>
+          <div class="col-6">
+            <input class="form-control" id="yearField" type="number" name="year" placeholder="Number" />
+          </div>
+        </div>
         <!--Image-->
-        <label for="image">Image: </label>
-        <input id="imageField" type="text" name="image">
+        <div class="form-group row inputField">
+          <label class="col-2 col-form-label" for="image">Image: </label>
+          <div class="col-6">
+            <input class="form-control" id="imageField" type="text" name="image" placeholder="URL">
+          </div>
+        </div>
         <!--Add Content-->
-        <input type="submit" value="Add Content">
+        <input id="addSubmitButton" class="btn btn-outline-primary" type="submit" value="Add Content">
       </form>
     </div>
-    <div>
-      <h5>Get Content</h5>
+    <div id="getContentContainer">
+      <h5 class="controlsTitle">Get Content</h5>
       <!--Form to get content-->
       <form id="getForm" action="/getContent" method="get">
-        <label for="getType">Type: </label>
-        <select id="getTypeField" name="getType">
-          <option value="all">All</option>
-          <option value="film">Film</option>
-          <option value="tv">TV</option>
-          <option value="game">Game</option>
-          <option value="literature">Literature</option>
-          <option value="music">Music</option>
-          <option value="other">Other</option>
-        </select>
-        <label for="getStatus">Type: </label>
-        <select id="getStatusField" name="getStatus">
-          <option value="all">All</option>
-          <option value="wishList">Wish List</option>
-          <option value="inProgress">In Progress</option>
-          <option value="complete">Complete</option>
-        </select>
-        <div id="getOtherContainer">
-          <label for="getOther">Please Specify: </label>
-          <input id="getOtherField" type="text" name="getOther">
+        <!--Get Type-->
+        <div class="form-group row inputField">
+          <label class="col-2 col-form-label" for="getType">Type: </label>
+          <div class="col-4">
+            <select class="custom-select" id="getTypeField" name="getType" required>
+              <option value="all">All</option>
+              <option value="film">Film</option>
+              <option value="tv">TV</option>
+              <option value="game">Game</option>
+              <option value="literature">Literature</option>
+              <option value="music">Music</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="col-5" id="getOtherContainer">
+            <input class="form-control" id="getOtherField" type="text" name="getOther" placeholder="Other" disabled>
+          </div>
+        </div>
+        <!--Get Status-->
+        <div class="form-group row inputField">
+          <label class="col-2 col-form-label" for="getStatus" required>Status*: </label>
+          <div class="col-6">
+            <select class="custom-select" id="getStatusField" name="getStatus">
+              <option value="all">All</option>
+              <option class="wishList" value="wishList">Wish List</option>
+              <option class="inProgress" value="inProgress">In Progress</option>
+              <option class="complete" value="complete">Complete</option>
+            </select>
+          </div>
         </div>
         <!--Get Content-->
-        <input type="submit" value="Get Content">
+        <input id="getSubmitButton" class="btn btn-outline-primary" type="submit" value="Get Content">
       </form>
     </div>
 
-    <button id="editTableButton">Edit Table</button>
+    <button class="btn btn-outline-primary btn-lg" id="editTableButton">Edit Table</button>
   </div>
-  <table id="contentTable">
-    <tr>
-      <th id="nameHeader">Name</th>
-      <th id="typeHeader">Type</th>
-      <th id="yearHeader">Year</th>
-      <th id="imageHeader">Image</th>
-      <th id="statusHeader">Status</th>
-    </tr>
-  </table>
+  </div>
+  <div id="tableContainer">
+    <table class="table table-striped" id="contentTable">
+        <col width="5%" />
+        <col width="22.5%" />
+        <col width="22.5%" />
+        <col width="22.5%" />
+        <col width="22.5%" />
+      <thead>
+        <tr>
+          <th id="statusHeader"></th>
+          <th id="nameHeader">Name</th>
+          <th id="typeHeader">Type</th>
+          <th id="yearHeader">Year</th>
+          <th id="imageHeader">Image</th>
+        </tr>
+      </thead>
+      <tbody>
+
+      </tbody>
+    </table>
+  </div>
 
 
   <script src="/script.js"></script>

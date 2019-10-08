@@ -16,10 +16,6 @@ const respondJSON = (request, response, status, obj, nextIndex) => {
       filteredObj[element] = obj[element];
     }
   });
-  // for (let i = Number(nextIndex); i < Object.keys(obj).length; i++) {
-  //   console.log(`looping ${obj[i]}`);
-  //   filteredObj[i] = obj[i];
-  // }
   response.write(JSON.stringify(filteredObj));
 
   response.end();
@@ -72,11 +68,12 @@ const addContent = (request, response, body) => {
     content[counter] = {};
   }
 
+  content[counter].status = body.status;
   content[counter].name = body.name;
   content[counter].type = body.type;
   content[counter].year = body.year || 'N/A';
   content[counter].image = body.image || 'N/A';
-  content[counter].status = body.status;
+
   counter++;
 
   if (responseCode === 201) {
@@ -88,11 +85,11 @@ const addContent = (request, response, body) => {
 };
 
 const updateContent = (request, response, body) => {
+  content[body.uniqueid].status = body.status;
   content[body.uniqueid].name = body.name;
   content[body.uniqueid].type = body.type;
   content[body.uniqueid].year = body.year || 'N/A';
   content[body.uniqueid].image = body.image || 'N/A';
-  content[body.uniqueid].status = body.status;
 
   return respondUpdateJSON(request, response, 201, content[body.uniqueid], body.uniqueid);
 };

@@ -8,18 +8,22 @@ html, body {
 #logo {
   max-width: 50px;
   max-height: 50px;
+  margin-right: 20px;
 }
 #top {
   width: 100%;
-  height: 5vh;
-  position: sticky;
+  height: 6vh;
+  position: fixed;
   background-color: #f1efef;
   border-bottom: 2px solid #f79257;
-  top: 2.5px;
-  z-index: -1;
+  z-index: 2;
 }
-#title {
-  display: inline-block;
+#logoWrapper{
+  width: 25vw;
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  justify-content: center;
 }
 #userIcon {
   float: right;
@@ -30,26 +34,59 @@ html, body {
 }
 #controls {
   float: left;
-  width: 20vw;
+  width: 25vw;
+  height: 60vh;
   border-right: 2px solid #F79257;
   border-bottom: 2px solid #F79257;
-  position: sticky;
+  position: fixed;
   background-color: #f1efef;
-  top: 50px;
+  margin-top: 5.85vh;
+  z-index: 3;
 }
 #addContentContainer {
-  margin-top: 10px;
+  margin-top: 1vh;
+}
+#getContentContainer {
+  margin-top: 3vh
+}
+
+.controlsTitle {
+  margin-left: .5vw;
+}
+.inputField {
+  margin-left: 1vw !important;
+}
+
+.col-2 {
+  max-width: 20% !important;
+}
+
+#otherField, #getOtherField {
+  transition: background-color .25s;
+}
+#addSubmitButton, #getSubmitButton, #editTableButton {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+#editTableButton {
+  margin-top: 5vh;
+}
+
+#tableContainer {
+  width: 79.5%;
+  margin-top: 6vh;
+  margin-left: 20vw;
+  display: inline-block;
+  z-index: 1;
+  position: relative;
 }
 #contentTable {
   margin-left: auto;
   margin-right: auto;
   width: 60vw;
-  margin-top: 50px;
-  z-index: -2;
-}
-
-#otherContainer, #getOtherContainer {
-  display: none;
+  margin-top: 3vh;
+  table-layout: fixed;
 }
 
 th {
@@ -58,6 +95,9 @@ th {
 
 td {
   position: relative;
+  height: 10vh;
+  overflow: hidden;
+  border: none !important;
 }
 
 .rowDropDownWrapper {
@@ -71,7 +111,8 @@ td {
     background: transparent;
     background-color: rgba(0, 0, 0, 0) !important;
     color: rgba(0,0,0,0);
-    border: 2px solid black;
+    border: 1.5px solid white;
+    width: 30px;
 }
 
 .rowDropDown option {
@@ -88,25 +129,22 @@ td {
 }
 
 .wishList {
-  background-color: green;
+  background-color: #5C946F;
 }
 .inProgress {
-  background-color: yellow;
+  background-color: #E8DB7C;
 }
 .complete {
-  background-color: red;
+  background-color: #AED9F4;
 }
 
 .tableImg {
-  max-width: 300px;
-  max-height: 300px;
+  max-width: 100%;
+  max-height: 100%;
 }
 
 #content {
   margin-top: 100px;
   font-size: 2em;
   text-align: center;
-}
-table, th, td {
-  border: 1px solid black;
 }

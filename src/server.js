@@ -3,6 +3,7 @@ const query = require('querystring');
 const url = require('url');
 const htmlHandler = require('./htmlResponses.js');
 const jsonHandler = require('./jsonResponses.js');
+const imageHandler = require('./imageResponses.js');
 
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
@@ -77,7 +78,7 @@ const handlePost = (request, response, parsedUrl) => {
 // Function that handles requests from client
 const onRequest = (request, response) => {
   const parsedUrl = url.parse(request.url);
-
+  console.log(request.method);
   switch (request.method) {
     case 'GET':
       if (parsedUrl.pathname === '/') {
@@ -86,7 +87,10 @@ const onRequest = (request, response) => {
         htmlHandler.getCSS(request, response);
       } else if (parsedUrl.pathname === '/script.js') {
         htmlHandler.getJS(request, response);
+      } else if (parsedUrl.pathname === '/logo') {
+        imageHandler.getLogo(request, response);
       } else if (parsedUrl.pathname === '/getContent') {
+        console.log("bruh" + parsedUrl.query.split('=').pop());
         jsonHandler.getContent(request, response, parsedUrl.query.split('=').pop());
       } else {
         // 404
