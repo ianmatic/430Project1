@@ -88,10 +88,10 @@ const onRequest = (request, response) => {
         htmlHandler.getJS(request, response);
       } else if (parsedUrl.pathname === '/logo') {
         imageHandler.getLogo(request, response);
-      } else if(parsedUrl.pathname === "/favicon.ico") {
+      } else if (parsedUrl.pathname === '/favicon.ico') {
         imageHandler.getFavicon(request, response);
       } else if (parsedUrl.pathname === '/getContent') {
-        console.log("bruh" + parsedUrl.query.split('=').pop());
+        console.log(`bruh${parsedUrl.query.split('=').pop()}`);
         jsonHandler.getContent(request, response, parsedUrl.query.split('=').pop());
       } else {
         // 404

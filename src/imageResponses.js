@@ -8,10 +8,10 @@ const getLogo = (request, response) => {
   response.end();
 };
 const getFavicon = (request, response) => {
-    response.writeHead(200, { 'Content-Type': 'image/x-icon' });
-    response.write(favicon);
-    response.end();
-  };
+  response.writeHead(200, { 'Content-Type': 'image/x-icon' });
+  response.write(favicon);
+  response.end();
+};
 
 module.exports.getLogo = getLogo;
 module.exports.getFavicon = getFavicon;

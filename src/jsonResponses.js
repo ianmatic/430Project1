@@ -1,5 +1,6 @@
 const content = {};
 const striptags = require('striptags');
+
 let counter = 0;
 // Function that sends the response JSON back to the client
 const respondJSON = (request, response, status, obj, nextIndex) => {
