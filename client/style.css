@@ -3,58 +3,79 @@ html, body {
   width: 100%;
   margin: 0;
   padding: 0;
+  font-family: 'Quicksand', sans-serif !important;
+  font-weight: 500 !important;
 }
 
 #logo {
-  max-width: 50px;
-  max-height: 50px;
+  max-width: 60px;
+  max-height: 60px;
   margin-right: 20px;
 }
 #top {
-  width: 100%;
-  height: 6vh;
+  width: calc(100% - 370px);
+  height: 100px;
   position: fixed;
   background-color: #f1efef;
   border-bottom: 2px solid #f79257;
   z-index: 2;
+  display: inline-block;
+  left: 373px;
+}
+#title {
+  font-weight: 600;
+  margin-right: 75px;
 }
 #logoWrapper{
-  width: 25vw;
+  width: 373px;
+  height: 100px;
   display: inline-flex;
   align-items: center;
-  height: 100%;
   justify-content: center;
+  background-color: #f1efef;
+  position: fixed;
 }
 #userIcon {
   float: right;
-  transform: scale(2.0);
-  margin-right: 50px;
-  position: relative;
-  top: 33%;
+  transform: scale(2.5);
+  position: fixed;
+  z-index: 9999;
+  margin-top: 35px;
+  margin-left: 95%;
+  color: #f79257;
+  padding: 5px 6px;
+  border: 1px solid #f79257;
+  border-radius: 15px;
 }
 #controls {
   float: left;
-  width: 25vw;
-  height: 60vh;
+  width: 375px;
+  height: 700px;
   border-right: 2px solid #F79257;
   border-bottom: 2px solid #F79257;
   position: fixed;
   background-color: #f1efef;
-  margin-top: 5.85vh;
   z-index: 3;
+  top: 100px;
 }
 #addContentContainer {
-  margin-top: 1vh;
+  margin-top: 25px;
 }
 #getContentContainer {
   margin-top: 3vh
 }
 
+#allStatusOption {
+  background-color: #fff !important;
+}
+
 .controlsTitle {
-  margin-left: .5vw;
+  margin-left: 30px;
+  margin-bottom: 15px;
+  font-weight: 600;
 }
 .inputField {
-  margin-left: 1vw !important;
+  margin-left: 15px !important;
 }
 
 .col-2 {
@@ -70,28 +91,56 @@ html, body {
   display: block;
 }
 #editTableButton {
-  margin-top: 5vh;
+  margin-top: 25px;
+  margin-left: 0;
+  position: fixed;
+  z-index: 9999;
+  margin-left: calc(95% - 240px);
+  width: 180px;
 }
 
 #tableContainer {
-  width: 79.5%;
-  margin-top: 6vh;
-  margin-left: 20vw;
-  display: inline-block;
+  width: calc(100% - 375px);
+  margin-top: 120px;
   z-index: 1;
   position: relative;
+  float: right;
 }
 #contentTable {
   margin-left: auto;
   margin-right: auto;
-  width: 60vw;
+  width: 70%;
   margin-top: 3vh;
   table-layout: fixed;
 }
 
-th {
+.tableHeader{
+  border: none !important;
+}
+#nameHeader, #typeHeader, #yearHeader, #imageHeader {
   cursor: pointer;
 }
+
+.statusColumn {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  overflow: visible;
+}
+.dropdown-item {
+  cursor: pointer;
+}
+.dropdown-toggle:empty::after {
+  margin-left: 0;
+  margin-top: .5em;
+  border-top: .6em solid;
+  border-left: .4em solid transparent;
+  border-right: .4em solid transparent;
+}
+.dropdown-menu {
+  min-width: 10px;
+  width: 120px;
+}
+
 
 td {
   position: relative;
@@ -101,18 +150,22 @@ td {
 }
 
 .rowDropDownWrapper {
-  position: absolute;
-  top: 5px;
-  left: 5px;
+  width: 25px;
+  height: 25px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .rowDropDown {
-    position: absolute;
-    background: transparent;
-    background-color: rgba(0, 0, 0, 0) !important;
-    color: rgba(0,0,0,0);
-    border: 1.5px solid white;
-    width: 30px;
+  width: 100%;
+  height: 100%;
+  padding: 0 !important;
+  border: 1.25px solid #fff !important;
+  border-radius: 0px !important;
+}
+.dataCell {
+  vertical-align: middle !important;
+  font-size: 1.5em;
 }
 
 .rowDropDown option {
@@ -120,22 +173,31 @@ td {
 }
 
 .deleteButtonContainer {
-  display: table-cell;
-  vertical-align: middle;
+  visibility: hidden;
+  opacity: 0;
+  margin-left: 2em;
+  margin-top: calc(7.5vh - 40px);
+  position: absolute;
 }
 
 .deleteButton {
-  height: 40px;
+  transform: scale(2.5);
+  cursor: pointer;
+  transition: color .25s;
+}
+
+.marked {
+  color: #f79257;
 }
 
 .wishList {
-  background-color: #5C946F;
+  background-color: #5C946F !important;
 }
 .inProgress {
-  background-color: #E8DB7C;
+  background-color: #f79257 !important;
 }
 .complete {
-  background-color: #AED9F4;
+  background-color: #AED9F4 !important;
 }
 
 .tableImg {

@@ -24,10 +24,28 @@ document.querySelector("#editTableButton").addEventListener('click', () => {
         for (let i = 1; i < table.rows.length; i++) {
             table.rows[i].setAttribute("contenteditable", true);
         }
+        // show delete buttons
+        document.querySelectorAll(".deleteButtonContainer").forEach(function (element) {
+            element.style.visibility = "visible";
+            element.style.opacity = "1";
+        });
         button.innerHTML = "Save Changes";
+
+        document.querySelector("#addSubmitButton").style.color = "black";
+        document.querySelector("#addSubmitButton").className = "btn btn-secondary";
     }
-    // send data back to server 
     else {
+        // remove any undesired rows
+        let rows = table.querySelector("tbody").querySelectorAll("tr");
+        rows.forEach(function (row) {
+            if (row.querySelector(".deleteButton").className.includes("marked")) {
+                table.querySelector('tbody').removeChild(row);
+                deleteRow(row.getAttribute("id"));
+            }
+        });
+
+
+        // send data back to server 
         // skip header
         for (let i = 1; i < table.rows.length; i++) {
             let newData = {};
@@ -36,13 +54,13 @@ document.querySelector("#editTableButton").addEventListener('click', () => {
             let statusBlock = table.rows[i].querySelector(".rowDropDownWrapper");
             table.rows[i].children[0].removeChild(table.rows[i].querySelector(".rowDropDownWrapper"));
 
-            newData.status = statusBlock.querySelector("select").value;
+            newData.status = statusBlock.querySelector("ul").getAttribute("value");
             newData.name = cells[1].innerText;
             newData.type = cells[2].innerText;
             newData.year = cells[3].innerText;
             // allow both image copying and url
             newData.image = cells[4].querySelector("img") === null
-                && cells[4].innerText || cells[4].querySelector("img").src;
+                ? cells[4].innerText : cells[4].querySelector("img").src;
             newData.uniqueid = table.rows[i].id;
 
             // re-attach dropDown
@@ -55,7 +73,15 @@ document.querySelector("#editTableButton").addEventListener('click', () => {
             table.rows[i].setAttribute("contenteditable", false);
         }
 
+        // hide delete buttons
+        document.querySelectorAll(".deleteButtonContainer").forEach(function (element) {
+            element.style.visibility = "hidden";
+            element.style.opacity = "0";
+        });
         button.innerHTML = "Edit Table";
+
+        document.querySelector("#addSubmitButton").className = "btn btn-outline-primary";
+        document.querySelector("#addSubmitButton").style.color = null;
     }
 });
 
@@ -81,7 +107,7 @@ document.querySelector("#statusField").addEventListener('change', () => {
 });
 document.querySelector("#getStatusField").addEventListener('change', () => {
     let select = document.querySelector("#getStatusField");
-    if (select.value === "all") {
+    if (select.value === "All") {
         select.style.backgroundColor = "#fff";
     } else {
         select.style.backgroundColor = window.getComputedStyle(select.options[select.selectedIndex]).backgroundColor;
@@ -217,25 +243,24 @@ function sortContent(column) {
 }
 
 function filterRows(type, status) {
-    let table = document.querySelector("#contentTable");
+    let tableBody = document.querySelector("#contentTable").querySelector("tbody");
 
-    // skip header
-    for (let i = 1; i < table.rows.length; i++) {
+    for (let i = 0; i < tableBody.rows.length; i++) {
         console.log(type);
-        const rowType = table.rows[i].cells[1].innerHTML.toLowerCase().trim();
-        const rowStatus = table.rows[i].className.includes(status);
+        const rowType = tableBody.rows[i].cells[2].getAttribute("serverData").trim().toLowerCase();
+        const rowStatus = tableBody.rows[i].cells[0].getAttribute("serverData").trim().toLowerCase();
         // all visible
         if (type == "all" && status == "all") {
-            table.rows[i].style.display = "table-row";
+            tableBody.rows[i].style.display = "table-row";
         } // enable rows of type with corresponding status
-        else if (rowType === type.toLowerCase() && (rowStatus || status == "all")) {
-            table.rows[i].style.display = "table-row";
+        else if (rowType === type && (rowStatus || status == "all")) {
+            tableBody.rows[i].style.display = "table-row";
         } // enable rows of status with corresponding type
-        else if (rowStatus && (rowType === type.toLowerCase() || type == "all")) {
-            table.rows[i].style.display = "table-row";
+        else if (rowStatus === status && (rowType === type || type == "all")) {
+            tableBody.rows[i].style.display = "table-row";
         } // don't show
         else {
-            table.rows[i].style.display = "none";
+            tableBody.rows[i].style.display = "none";
         }
     }
 }
@@ -262,49 +287,76 @@ const handleResponse = (xhr, shouldDisplay, update, remove) => {
             for (let j = 0; j < 5; j++) {
                 // build a cell
                 let tableData = document.createElement("td");
+                tableData.className = "dataCell";
                 // only change color
                 if (j === 0) {
-                    tableData.className += " " + Object.values(obj[element])[j];
+                    tableData.className = Object.values(obj[element])[j];
+                    tableData.className += " statusColumn";
 
                     // also add a dropdown
                     let div = document.createElement('div');
-                    div.className = "rowDropDownWrapper";
+                    div.className = "rowDropDownWrapper dropdown";
+                    let dropdown = document.createElement("button");
+                    dropdown.className = "rowDropDown btn btn-secondary dropdown-toggle " + Object.values(obj[element])[j];
+                    dropdown.setAttribute("type", "button");
+                    dropdown.setAttribute("data-toggle", "dropdown");
+                    dropdown.id = "";
 
-                    let select = document.querySelector("#statusField").cloneNode(true);
-                    select.querySelectorAll("option").forEach(function (option) {
-                        // match up with current status
-                        option.selected = option.value == Object.values(obj[element])[0] && true || false;
+                    let options = document.createElement("ul");
+                    options.setAttribute("value", Object.values(obj[element])[j]);
+                    options.className += " dropdown-menu";
+
+                    let wishList = document.createElement("li");
+                    wishList.innerText = "Wish List";
+                    wishList.className += " wishList dropdown-item";
+                    wishList.setAttribute("value", "wishList");
+                    options.appendChild(wishList);
+
+                    let inProgress = document.createElement("li");
+                    inProgress.innerText = "In Progress";
+                    inProgress.className += " inProgress dropdown-item";
+                    inProgress.setAttribute("value", "inProgress");
+                    options.appendChild(inProgress);
+
+                    let complete = document.createElement("li");
+                    complete.innerText = "Complete";
+                    complete.className += " complete dropdown-item";
+                    complete.setAttribute("value", "complete");
+                    options.appendChild(complete);
+
+                    options.querySelectorAll("li").forEach(function (option) {
+                        option.addEventListener('click', function () {
+                            this.parentElement.setAttribute("value", this.getAttribute("value"));
+                            this.parentElement.parentElement.querySelector("button").className = "rowDropDown btn btn-secondary dropdown-toggle " + this.getAttribute("value");
+                            // don't fire if editing table
+                            if (document.querySelector("#editTableButton").innerHTML === "Edit Table") {
+                                console.log('this: ' + this);
+                                let newData = {};
+                                let row = document.getElementById(`${element}`);
+                                let cells = row.children;
+
+                                newData.status = this.getAttribute("value");
+                                newData.name = cells[1].getAttribute("serverData");
+                                newData.type = cells[2].getAttribute("serverData");
+                                newData.year = cells[3].getAttribute("serverData");
+                                newData.image = cells[4].getAttribute("serverData");
+                                newData.uniqueid = row.id;
+
+                                console.log(cells);
+                                console.log(newData);
+
+                                updateRow(newData);
+                            }
+                        });
                     });
-                    select.className = "rowDropDown";
-                    select.id = "";
-                    select.addEventListener('change', function () {
-                        // don't fire if editing table
-                        if (document.querySelector("#editTableButton").innerHTML === "Edit Table") {
-                            console.log('this: ' + this);
-                            let newData = {};
-                            let row = document.getElementById(`${element}`);
-                            let cells = row.children;
-
-                            newData.status = this.value;
-                            newData.name = cells[1].getAttribute("serverData");
-                            newData.type = cells[2].getAttribute("serverData");
-                            newData.year = cells[3].getAttribute("serverData");
-                            newData.image = cells[4].getAttribute("serverData");
-                            newData.uniqueid = row.id;
-
-                            console.log(cells);
-                            console.log(newData);
-
-                            updateRow(newData);
-                        }
-                    });
-                    div.appendChild(select);
+                    div.appendChild(dropdown);
+                    div.appendChild(options);
 
                     console.log(div);
                     tableData.appendChild(div);
                 }
                 else if (j === 4) {
-                    tableData.innerHTML = Object.values(obj[element])[j] === "N/A"
+                    tableData.innerHTML = Object.values(obj[element])[j].trim() === ""
                         && Object.values(obj[element])[j]
                         || `<img src="${Object.values(obj[element])[j]}" alt="${Object.values(obj[element])[1]}" class="tableImg">`;
                 } else {
@@ -316,11 +368,18 @@ const handleResponse = (xhr, shouldDisplay, update, remove) => {
             let container = document.createElement("div");
             container.className = "deleteButtonContainer";
 
-            let deleteButton = document.createElement("button");
-            deleteButton.innerText = "Delete Entry";
-            deleteButton.className = "deleteButton";
+            let temp = document.createElement("div");
+            temp.innerHTML = `<i class="fas fa-trash"></i>`;
+            let deleteButton = temp.firstChild;
+            deleteButton.className += " deleteButton";
             deleteButton.addEventListener('click', function () {
-                deleteRow(this.parentElement.parentElement.getAttribute("id"));
+                // unmark row
+                if (this.className.includes("marked")) {
+                    this.classList.remove("marked");
+                } // mark row
+                else {
+                    this.className += " marked";
+                }
             });
             container.appendChild(deleteButton);
             tr.appendChild(container);
@@ -336,32 +395,29 @@ const handleResponse = (xhr, shouldDisplay, update, remove) => {
         });
         const getTypeField = document.querySelector('#getTypeField');
         const getTypeValue = getTypeField.value === "other" && document.querySelector("#getOtherField").value || getTypeField.value;
-        filterRows(getTypeValue, document.querySelector('#getStatusField').value);
+        filterRows(getTypeValue.toLowerCase(), document.querySelector('#getStatusField').value.toLowerCase());
     } else if (update) {
         const obj = JSON.parse(xhr.response);
         let tr = document.getElementById(`${obj.uniqueid}`);
-        const dropDown = tr.querySelector(".rowDropDown");
+        const dropDown = tr.querySelector(".rowDropDownWrapper");
         tr.innerHTML = "";
 
         // fill each row with 5 columns of parsed data
         for (let j = 0; j < Object.keys(obj).length - 1; j++) {
             // build a cell
             let tableData = document.createElement("td");
+            tableData.className = "dataCell";
             // only change color
             if (j === 0) {
                 tableData.className = " " + Object.values(obj)[j];
+                tableData.className += " statusColumn";
 
                 // also add a dropdown
-                let div = document.createElement('div');
-                div.className = "rowDropDownWrapper";
-
-                div.appendChild(dropDown);
-
-                console.log(div);
-                tableData.appendChild(div);
+                dropDown.querySelector("button").className = "rowDropDown btn btn-secondary dropdown-toggle " + Object.values(obj)[j];
+                tableData.appendChild(dropDown);
             }
             else if (j === 4) {
-                tableData.innerHTML = Object.values(obj)[j] === "N/A"
+                tableData.innerHTML = Object.values(obj)[j].trim() === ""
                     && Object.values(obj)[j]
                     || `<img src="${Object.values(obj)[j]}" alt="${Object.values(obj)[1]}" class="tableImg">`;
             } else {
@@ -374,11 +430,18 @@ const handleResponse = (xhr, shouldDisplay, update, remove) => {
         let container = document.createElement("div");
         container.className = "deleteButtonContainer";
 
-        let deleteButton = document.createElement("button");
-        deleteButton.innerText = "Delete Entry";
-        deleteButton.className = "deleteButton";
+        let temp = document.createElement("div");
+        temp.innerHTML = `<i class="fas fa-trash"></i>`;
+        let deleteButton = temp.firstChild;
+        deleteButton.className += " deleteButton";
         deleteButton.addEventListener('click', function () {
-            deleteRow(this.parentElement.parentElement.getAttribute("id"));
+            // unmark row
+            if (this.className.includes("marked")) {
+                this.classList.remove("marked");
+            } // mark row
+            else {
+                this.className += " marked";
+            }
         });
 
         container.appendChild(deleteButton);
@@ -386,32 +449,40 @@ const handleResponse = (xhr, shouldDisplay, update, remove) => {
 
     } else if (remove) {
         const obj = JSON.parse(xhr.response);
-        table.querySelector("tbody").removeChild(document.getElementById(`${obj.uniqueid}`));
+        // removed if it hasn't already been removed in updating 
+        if (document.getElementById(`${obj.uniqueid}`)) {
+            table.querySelector("tbody").removeChild(document.getElementById(`${obj.uniqueid}`));
+        }
     }
 };
 // Send Request function for adding a form
 const sendPOST = (e, form) => {
-    // create Ajax
-    const xhr = new XMLHttpRequest();
-    xhr.open(form.getAttribute('method'), form.getAttribute('action'));
-    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    xhr.setRequestHeader('Accept', 'application/json');
+    // only send if not editing
+    if (document.querySelector("#editTableButton").innerHTML === "Edit Table") {
+        // create Ajax
+        const xhr = new XMLHttpRequest();
+        xhr.open(form.getAttribute('method'), form.getAttribute('action'));
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhr.setRequestHeader('Accept', 'application/json');
 
-    // Handle response once we receive it, and parse it
-    xhr.onload = () => handleResponse(xhr, false, false, false);
+        // Handle response once we receive it, and parse it
+        //xhr.onload = () => handleResponse(xhr, false, false, false);
+        xhr.onload = (e) => requestUpdate(e);
 
-    const typeField = form.querySelector('#typeField');
+        const typeField = form.querySelector('#typeField');
 
-    // if other is selected, use other, otherwise use type
-    const typeValue = typeField.value === "other" && form.querySelector("#otherField").value || typeField.value;
-    const data = `name=${form.querySelector('#nameField').value.trim()}
-                      &type=${typeValue.trim()}
-                      &year=${form.querySelector('#yearField').value.trim()}
-                      &image=${form.querySelector('#imageField').value.trim()}
-                      &status=${form.querySelector('#statusField').value.trim()}`;
-    // Send Request
-    xhr.send(data);
-
+        // if other is selected, use other, otherwise use type
+        const typeValue = typeField.value === "other" && form.querySelector("#otherField").value || typeField.value;
+        const data = `name=${form.querySelector('#nameField').value.trim()}
+                  &type=${typeValue.trim()}
+                  &year=${form.querySelector('#yearField').value.trim()}
+                  &image=${form.querySelector('#imageField').value.trim()}
+                  &status=${form.querySelector('#statusField').value.trim()}`;
+        // Send Request
+        xhr.send(data);
+    } else {
+        alert("Please save your changes before adding more media!");
+    }
     // prevent default browser behavior
     e.preventDefault();
     return false;
@@ -433,7 +504,9 @@ const requestUpdate = (e, form) => {
 
     xhr.send();
 
-    e.preventDefault();
+    if (e) {
+        e.preventDefault();
+    }
     return false;
 };
 
@@ -456,5 +529,7 @@ const init = () => {
     // Set DOM listeners
     addContentForm.addEventListener('submit', addListener);
     getContentForm.addEventListener('submit', getListener);
+
+    requestUpdate();
 };
 window.onload = init;

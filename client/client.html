@@ -2,25 +2,27 @@
 <html lang="en">
 
 <head>
-  <title>Our simple HTTP server</title>
+  <title>ClickREC</title>
   <link rel="stylesheet" type="text/css" href="/style.css">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
     integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css?family=Quicksand:300,400,500,600,700&display=swap" rel="stylesheet">
 </head>
 
 <body>
+  <i id="userIcon" class="fas fa-user"></i>
+  <button class="btn btn-outline-primary btn-lg" id="editTableButton">Edit Table</button>
+  <div id="logoWrapper">
+    <img id="logo" src="/logo" alt="logo">
+    <h1 id="title">ClickREC</h1>
+  </div>
   <div id="top">
-    <div id="logoWrapper">
-      <img id="logo" src="/logo" alt="logo">
-      <h1 id="title">Media Tracker</h1>
-    </div>
-    <i id="userIcon" class="fas fa-user"></i>
   </div>
   <div id="controls">
     <div id="addContentContainer">
-      <h5 class="controlsTitle">Add Content</h5>
+      <h5 class="controlsTitle">Add Media</h5>
       <!--Form to add content-->
       <form id="addForm" action="/addContent" method="post">
         <!--Name-->
@@ -74,11 +76,11 @@
           </div>
         </div>
         <!--Add Content-->
-        <input id="addSubmitButton" class="btn btn-outline-primary" type="submit" value="Add Content">
+        <input id="addSubmitButton" class="btn btn-outline-primary" type="submit" value="Add Media">
       </form>
     </div>
     <div id="getContentContainer">
-      <h5 class="controlsTitle">Get Content</h5>
+      <h5 class="controlsTitle">Filter Media</h5>
       <!--Form to get content-->
       <form id="getForm" action="/getContent" method="get">
         <!--Get Type-->
@@ -86,12 +88,12 @@
           <label class="col-2 col-form-label" for="getType">Type: </label>
           <div class="col-4">
             <select class="custom-select" id="getTypeField" name="getType" required>
-              <option value="all">All</option>
-              <option value="film">Film</option>
-              <option value="tv">TV</option>
-              <option value="game">Game</option>
-              <option value="literature">Literature</option>
-              <option value="music">Music</option>
+              <option value="All">All</option>
+              <option value="Film">Film</option>
+              <option value="TV">TV</option>
+              <option value="Game">Game</option>
+              <option value="Literature">Literature</option>
+              <option value="Music">Music</option>
               <option value="other">Other</option>
             </select>
           </div>
@@ -104,7 +106,7 @@
           <label class="col-2 col-form-label" for="getStatus" required>Status*: </label>
           <div class="col-6">
             <select class="custom-select" id="getStatusField" name="getStatus">
-              <option value="all">All</option>
+              <option id="allStatusOption" value="all">All</option>
               <option class="wishList" value="wishList">Wish List</option>
               <option class="inProgress" value="inProgress">In Progress</option>
               <option class="complete" value="complete">Complete</option>
@@ -112,27 +114,25 @@
           </div>
         </div>
         <!--Get Content-->
-        <input id="getSubmitButton" class="btn btn-outline-primary" type="submit" value="Get Content">
+        <input id="getSubmitButton" class="btn btn-outline-primary" type="submit" value="Apply Filter">
       </form>
     </div>
-
-    <button class="btn btn-outline-primary btn-lg" id="editTableButton">Edit Table</button>
   </div>
   </div>
   <div id="tableContainer">
     <table class="table table-striped" id="contentTable">
-        <col width="5%" />
-        <col width="22.5%" />
-        <col width="22.5%" />
-        <col width="22.5%" />
-        <col width="22.5%" />
+      <col width="5.5%" />
+      <col width="23.75%" />
+      <col width="23.75%" />
+      <col width="23.75%" />
+      <col width="23.75%" />
       <thead>
         <tr>
-          <th id="statusHeader"></th>
-          <th id="nameHeader">Name</th>
-          <th id="typeHeader">Type</th>
-          <th id="yearHeader">Year</th>
-          <th id="imageHeader">Image</th>
+          <th class="tableHeader" id="statusHeader"></th>
+          <th class="tableHeader" id="nameHeader">Name</th>
+          <th class="tableHeader" id="typeHeader">Type</th>
+          <th class="tableHeader" id="yearHeader">Year</th>
+          <th class="tableHeader" id="imageHeader">Image</th>
         </tr>
       </thead>
       <tbody>
@@ -146,6 +146,9 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous"></script>

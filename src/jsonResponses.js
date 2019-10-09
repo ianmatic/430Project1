@@ -1,4 +1,5 @@
 const content = {};
+const striptags = require('striptags');
 let counter = 0;
 // Function that sends the response JSON back to the client
 const respondJSON = (request, response, status, obj, nextIndex) => {
@@ -68,11 +69,11 @@ const addContent = (request, response, body) => {
     content[counter] = {};
   }
 
-  content[counter].status = body.status;
-  content[counter].name = body.name;
-  content[counter].type = body.type;
-  content[counter].year = body.year || 'N/A';
-  content[counter].image = body.image || 'N/A';
+  content[counter].status = striptags(body.status);
+  content[counter].name = striptags(body.name);
+  content[counter].type = striptags(body.type);
+  content[counter].year = striptags(body.year);
+  content[counter].image = striptags(body.image);
 
   counter++;
 
@@ -85,11 +86,11 @@ const addContent = (request, response, body) => {
 };
 
 const updateContent = (request, response, body) => {
-  content[body.uniqueid].status = body.status;
-  content[body.uniqueid].name = body.name;
-  content[body.uniqueid].type = body.type;
-  content[body.uniqueid].year = body.year || 'N/A';
-  content[body.uniqueid].image = body.image || 'N/A';
+  content[body.uniqueid].status = striptags(body.status);
+  content[body.uniqueid].name = striptags(body.name);
+  content[body.uniqueid].type = striptags(body.type);
+  content[body.uniqueid].year = striptags(body.year);
+  content[body.uniqueid].image = striptags(body.image);
 
   return respondUpdateJSON(request, response, 201, content[body.uniqueid], body.uniqueid);
 };

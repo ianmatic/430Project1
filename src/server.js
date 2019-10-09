@@ -69,7 +69,6 @@ const handlePost = (request, response, parsedUrl) => {
     // end of upload stream.
     request.on('end', () => {
       body = query.parse(Buffer.concat(body).toString());
-
       jsonHandler.removeContent(request, tempResponse, body);
     });
   }
@@ -89,6 +88,8 @@ const onRequest = (request, response) => {
         htmlHandler.getJS(request, response);
       } else if (parsedUrl.pathname === '/logo') {
         imageHandler.getLogo(request, response);
+      } else if(parsedUrl.pathname === "/favicon.ico") {
+        imageHandler.getFavicon(request, response);
       } else if (parsedUrl.pathname === '/getContent') {
         console.log("bruh" + parsedUrl.query.split('=').pop());
         jsonHandler.getContent(request, response, parsedUrl.query.split('=').pop());
