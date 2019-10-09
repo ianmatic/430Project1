@@ -9,63 +9,39 @@ const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
 // handle data sent from client
 const handlePost = (request, response, parsedUrl) => {
+  const tempResponse = response;
+  let body = [];
+
+  // error in upload stream
+  request.on('error', (err) => {
+    console.dir(err);
+    tempResponse.statusCode = 400;
+    tempResponse.end();
+  });
+
+  // add data to body
+  request.on('data', (chunk) => {
+    body.push(chunk);
+  });
+
+  // add content to table
   if (parsedUrl.pathname === '/addContent') {
-    const tempResponse = response;
-    let body = [];
-
-    // error in upload stream
-    request.on('error', (err) => {
-      console.dir(err);
-      tempResponse.statusCode = 400;
-      tempResponse.end();
-    });
-
-    request.on('data', (chunk) => {
-      body.push(chunk);
-    });
-
     // end of upload stream.
     request.on('end', () => {
       body = query.parse(Buffer.concat(body).toString());
 
       jsonHandler.addContent(request, tempResponse, body);
     });
-  } else if (parsedUrl.pathname === '/updateContent') {
-    const tempResponse = response;
-    let body = [];
-
-    // error in upload stream
-    request.on('error', (err) => {
-      console.dir(err);
-      tempResponse.statusCode = 400;
-      tempResponse.end();
-    });
-
-    request.on('data', (chunk) => {
-      body.push(chunk);
-    });
-
+  } // update existing content in table 
+  else if (parsedUrl.pathname === '/updateContent') {
     // end of upload stream.
     request.on('end', () => {
       body = query.parse(Buffer.concat(body).toString());
 
       jsonHandler.updateContent(request, tempResponse, body);
     });
-  } else if (parsedUrl.pathname === '/removeContent') {
-    const tempResponse = response;
-    let body = [];
-
-    // error in upload stream
-    request.on('error', (err) => {
-      console.dir(err);
-      tempResponse.statusCode = 400;
-      tempResponse.end();
-    });
-
-    request.on('data', (chunk) => {
-      body.push(chunk);
-    });
-
+  } // remove existing content in table 
+  else if (parsedUrl.pathname === '/removeContent') {
     // end of upload stream.
     request.on('end', () => {
       body = query.parse(Buffer.concat(body).toString());
@@ -80,22 +56,35 @@ const onRequest = (request, response) => {
   console.log(request.method);
   switch (request.method) {
     case 'GET':
-      if (parsedUrl.pathname === '/') {
-        htmlHandler.getIndex(request, response);
-      } else if (parsedUrl.pathname === '/style.css') {
-        htmlHandler.getCSS(request, response);
-      } else if (parsedUrl.pathname === '/script.js') {
-        htmlHandler.getJS(request, response);
-      } else if (parsedUrl.pathname === '/logo') {
-        imageHandler.getLogo(request, response);
-      } else if (parsedUrl.pathname === '/favicon.ico') {
-        imageHandler.getFavicon(request, response);
-      } else if (parsedUrl.pathname === '/getContent') {
-        console.log(`bruh${parsedUrl.query.split('=').pop()}`);
-        jsonHandler.getContent(request, response, parsedUrl.query.split('=').pop());
-      } else {
-        // 404
-        jsonHandler.notFound(request, response);
+      switch (parsedUrl.pathname) {
+        case '/':
+          // get Index page
+          htmlHandler.getIndex(request, response);
+          break;
+        case '/style.css':
+          // get CSS
+          htmlHandler.getCSS(request, response);
+          break;
+        case '/script.js':
+          // get client JS
+          htmlHandler.getJS(request, response);
+          break;
+        case '/logo':
+          // get logo img
+          imageHandler.getLogo(request, response);
+          break;
+        case '/favicon.ico':
+          // get favicon
+          imageHandler.getFavicon(request, response);
+          break;
+        case '/getContent':
+          // get requested content
+          jsonHandler.getContent(request, response, parsedUrl.query.split('=').pop());
+          break;
+        default:
+          // 404
+          jsonHandler.notFound(request, response);
+          break;
       }
       break;
     case 'HEAD':
