@@ -1,12 +1,12 @@
 const content = {};
 const striptags = require('striptags');
+
 let counter = 0;
 
 // Function that sends the response JSON back to the client
 const respondJSON = (request, response, status, obj, nextIndex) => {
   // Send back response JSON to client
   response.writeHead(status, { 'Content-Type': 'application/json' });
-  const jsonObj = JSON.stringify(obj);
   const filteredObj = {};
 
   // only get new data, nextIndex is the index of the last data fetched
@@ -73,7 +73,6 @@ const respondUpdateJSON = (request, response, status, obj, uniqueid) => {
 
 // update existing data in content
 const updateContent = (request, response, body) => {
-
   // strip tags to prevent xss
   content[body.uniqueid].status = striptags(body.status);
   content[body.uniqueid].name = striptags(body.name);

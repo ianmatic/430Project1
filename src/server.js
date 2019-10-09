@@ -32,16 +32,14 @@ const handlePost = (request, response, parsedUrl) => {
 
       jsonHandler.addContent(request, tempResponse, body);
     });
-  } // update existing content in table 
-  else if (parsedUrl.pathname === '/updateContent') {
+  } else if (parsedUrl.pathname === '/updateContent') { // update existing content in table
     // end of upload stream.
     request.on('end', () => {
       body = query.parse(Buffer.concat(body).toString());
 
       jsonHandler.updateContent(request, tempResponse, body);
     });
-  } // remove existing content in table 
-  else if (parsedUrl.pathname === '/removeContent') {
+  } else if (parsedUrl.pathname === '/removeContent') { // remove existing content in table
     // end of upload stream.
     request.on('end', () => {
       body = query.parse(Buffer.concat(body).toString());
@@ -53,7 +51,6 @@ const handlePost = (request, response, parsedUrl) => {
 // Function that handles requests from client
 const onRequest = (request, response) => {
   const parsedUrl = url.parse(request.url);
-  console.log(request.method);
   switch (request.method) {
     case 'GET':
       switch (parsedUrl.pathname) {

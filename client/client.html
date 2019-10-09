@@ -4,6 +4,8 @@
 <head>
   <title>ClickREC</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Load visuals (stylesheets and fonts-->
   <link rel="stylesheet" type="text/css" href="/style.css">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -15,12 +17,16 @@
 <body>
   <i id="userIcon" class="fas fa-user"></i>
   <button class="btn btn-outline-primary btn-lg" id="editTableButton">Edit Table</button>
+
+  <!--Logo image and text-->
   <div id="logoWrapper">
     <img id="logo" src="/logo" alt="logo">
     <h1 id="title">ClickREC</h1>
   </div>
+  <!--Top section for visual spice-->
   <div id="top">
   </div>
+  <!--Add and Get forms-->
   <div id="controls">
     <div id="addContentContainer">
       <h5 class="controlsTitle">Add Media</h5>
@@ -82,9 +88,9 @@
     </div>
     <div id="getContentContainer">
       <h5 class="controlsTitle">Filter Media</h5>
-      <!--Form to get content-->
+      <!--Form to filter content-->
       <form id="getForm" action="/getContent" method="get">
-        <!--Get Type-->
+        <!--filter Type-->
         <div class="form-group row inputField">
           <label class="col-2 col-form-label" for="getType">Type: </label>
           <div class="col-4">
@@ -102,7 +108,7 @@
             <input class="form-control" id="getOtherField" type="text" name="getOther" placeholder="Other" disabled>
           </div>
         </div>
-        <!--Get Status-->
+        <!--filter Status-->
         <div class="form-group row inputField">
           <label class="col-2 col-form-label" for="getStatus" required>Status*: </label>
           <div class="col-6">
@@ -114,14 +120,17 @@
             </select>
           </div>
         </div>
-        <!--Get Content-->
+        <!--filter Content-->
         <input id="getSubmitButton" class="btn btn-outline-primary" type="submit" value="Apply Filter">
       </form>
     </div>
   </div>
-  </div>
+  <!--End Add/Get Forms-->
+
+  <!--Table-->
   <div id="tableContainer">
     <table class="table table-striped" id="contentTable">
+      <!--Set width for each column-->
       <col width="5.5%" />
       <col width="23.75%" />
       <col width="23.75%" />
@@ -137,14 +146,14 @@
         </tr>
       </thead>
       <tbody>
-
+        <!--Filled by JS and node-->
       </tbody>
     </table>
   </div>
 
 
+  <!--Load scripts-->
   <script src="/script.js"></script>
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"

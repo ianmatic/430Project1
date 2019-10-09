@@ -1,90 +1,25 @@
+let nextIndex = 0;
+
+// toggle ability to type in other field in add
 document.querySelector("#typeField").addEventListener('change', () => {
+    const otherField = document.querySelector("#otherField");
     if (document.querySelector("#typeField").value === "other") {
-        document.querySelector("#otherField").disabled = false;
+        otherField.disabled = false;
     } else {
-        document.querySelector("#otherField").disabled = true;
+        otherField.disabled = true;
     }
 });
-
+// toggle ability to type in other field in get
 document.querySelector("#getTypeField").addEventListener('change', () => {
+    const getOtherField = document.querySelector("#getOtherField");
     if (document.querySelector("#getTypeField").value === "other") {
-        document.querySelector("#getOtherField").disabled = false;
+        getOtherField.disabled = false;
     } else {
-        document.querySelector("#getOtherField").disabled = true;
+        getOtherField.disabled = true;
     }
 });
 
-document.querySelector("#editTableButton").addEventListener('click', () => {
-    let button = document.querySelector("#editTableButton");
-    let table = document.querySelector("#contentTable");
-
-    // enable editing of table
-    if (button.innerHTML === "Edit Table") {
-        // skip header
-        for (let i = 1; i < table.rows.length; i++) {
-            table.rows[i].setAttribute("contenteditable", true);
-        }
-        // show delete buttons
-        document.querySelectorAll(".deleteButtonContainer").forEach(function (element) {
-            element.style.visibility = "visible";
-            element.style.opacity = "1";
-        });
-        button.innerHTML = "Save Changes";
-
-        document.querySelector("#addSubmitButton").style.color = "black";
-        document.querySelector("#addSubmitButton").className = "btn btn-secondary";
-    }
-    else {
-        // remove any undesired rows
-        let rows = table.querySelector("tbody").querySelectorAll("tr");
-        rows.forEach(function (row) {
-            if (row.querySelector(".deleteButton").className.includes("marked")) {
-                table.querySelector('tbody').removeChild(row);
-                deleteRow(row.getAttribute("id"));
-            }
-        });
-
-
-        // send data back to server 
-        // skip header
-        for (let i = 1; i < table.rows.length; i++) {
-            let newData = {};
-            let cells = table.rows[i].children;
-            // temporarily remove status dropDown
-            let statusBlock = table.rows[i].querySelector(".rowDropDownWrapper");
-            table.rows[i].children[0].removeChild(table.rows[i].querySelector(".rowDropDownWrapper"));
-
-            newData.status = statusBlock.querySelector("ul").getAttribute("value");
-            newData.name = cells[1].innerText;
-            newData.type = cells[2].innerText;
-            newData.year = cells[3].innerText;
-            // allow both image copying and url
-            newData.image = cells[4].querySelector("img") === null
-                ? cells[4].innerText : cells[4].querySelector("img").src;
-            newData.uniqueid = table.rows[i].id;
-
-            // re-attach dropDown
-            table.rows[i].appendChild(statusBlock);
-            console.log(cells);
-            console.log(newData);
-
-            updateRow(newData);
-
-            table.rows[i].setAttribute("contenteditable", false);
-        }
-
-        // hide delete buttons
-        document.querySelectorAll(".deleteButtonContainer").forEach(function (element) {
-            element.style.visibility = "hidden";
-            element.style.opacity = "0";
-        });
-        button.innerHTML = "Edit Table";
-
-        document.querySelector("#addSubmitButton").className = "btn btn-outline-primary";
-        document.querySelector("#addSubmitButton").style.color = null;
-    }
-});
-
+// enable clicking on headers to sort
 document.querySelector("#statusHeader").addEventListener('click', () => {
     sortContent(0);
 });
@@ -101,6 +36,7 @@ document.querySelector("#imageHeader").addEventListener('click', () => {
     sortContent(4);
 });
 
+// change color of selects to selected status
 document.querySelector("#statusField").addEventListener('change', () => {
     let select = document.querySelector("#statusField");
     select.style.backgroundColor = window.getComputedStyle(select.options[select.selectedIndex]).backgroundColor;
@@ -114,6 +50,77 @@ document.querySelector("#getStatusField").addEventListener('change', () => {
     }
 });
 
+// enable editing / update database
+document.querySelector("#editTableButton").addEventListener('click', () => {
+    let button = document.querySelector("#editTableButton");
+    let table = document.querySelector("#contentTable");
+    const submitButton = document.querySelector("#addSubmitButton");
+
+    // enable editing of table
+    if (button.innerHTML === "Edit Table") {
+        // skip header
+        for (let i = 1; i < table.rows.length; i++) {
+            table.rows[i].setAttribute("contenteditable", true);
+        }
+        // show delete buttons
+        document.querySelectorAll(".deleteButtonContainer").forEach(function (element) {
+            element.style.visibility = "visible";
+            element.style.opacity = "1";
+        });
+
+        button.innerHTML = "Save Changes";
+        submitButton.style.color = "black";
+        submitButton.className = "btn btn-secondary";
+    }
+    else {
+        // remove any undesired rows
+        let rows = table.querySelector("tbody").querySelectorAll("tr");
+        rows.forEach(function (row) {
+            if (row.querySelector(".deleteButton").className.includes("marked")) {
+                table.querySelector('tbody').removeChild(row);
+                deleteRow(row.getAttribute("id"));
+            }
+        });
+
+        // send data back to server 
+        // skip header
+        for (let i = 1; i < table.rows.length; i++) {
+            let newData = {};
+            let cells = table.rows[i].children;
+            // temporarily remove status dropDown
+            let statusBlock = table.rows[i].querySelector(".rowDropDownWrapper");
+            table.rows[i].children[0].removeChild(table.rows[i].querySelector(".rowDropDownWrapper"));
+
+            // setup new data
+            newData.status = statusBlock.querySelector("ul").getAttribute("value");
+            newData.name = cells[1].innerText;
+            newData.type = cells[2].innerText;
+            newData.year = cells[3].innerText;
+            // allow both image copying and url
+            newData.image = cells[4].querySelector("img") === null
+                ? cells[4].innerText : cells[4].querySelector("img").src;
+            newData.uniqueid = table.rows[i].id;
+
+            // re-attach dropDown
+            table.rows[i].appendChild(statusBlock);
+
+            updateRow(newData);
+
+            table.rows[i].setAttribute("contenteditable", false);
+        }
+
+        // hide delete buttons
+        document.querySelectorAll(".deleteButtonContainer").forEach(function (element) {
+            element.style.visibility = "hidden";
+            element.style.opacity = "0";
+        });
+
+        button.innerHTML = "Edit Table";
+        submitButton.className = "btn btn-outline-primary";
+        submitButton.style.color = null;
+    }
+});
+
 function updateRow(newData) {
     // create Ajax
     const xhr = new XMLHttpRequest();
@@ -121,7 +128,7 @@ function updateRow(newData) {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.setRequestHeader('Accept', 'application/json');
 
-    // Handle response once we receive it, and parse it
+    // Handle response once we receive it by updating the row
     xhr.onload = () => handleResponse(xhr, false, true, false);
 
     const data = `name=${newData.name.trim()}
@@ -144,7 +151,7 @@ function deleteRow(uniqueid) {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.setRequestHeader('Accept', 'application/json');
 
-    // Handle response once we receive it, and parse it
+    // Handle response once we receive it by removing the row
     xhr.onload = () => handleResponse(xhr, false, false, true);
 
     const data = `uniqueid=${uniqueid}`;
@@ -156,7 +163,7 @@ function deleteRow(uniqueid) {
 }
 
 // used W3 for reference algo https://www.w3schools.com/howto/howto_js_sort_table.asp
-// column is number, order is string
+// column is number
 function sortContent(column) {
     const table = document.querySelector("#contentTable");
     // sort only if multiple rows (not including header row)
@@ -194,9 +201,6 @@ function sortContent(column) {
                 }
                 // sort by status
                 else if (column == 0) {
-
-                    // get the statuses
-
                     // ascending order
                     if (direction === "ascending" && previousRow.getAttribute("serverData")
                         > currentRow.getAttribute("serverData")) {
@@ -214,13 +218,11 @@ function sortContent(column) {
                 else {
                     // ascending order
                     if (direction === "ascending" && previousRow.innerHTML.toLowerCase() > currentRow.innerHTML.toLowerCase()) {
-                        console.log("sort ascending");
                         switchRows = true;
                         break;
                         //descending order
                     }
                     else if (direction === "descending" && previousRow.innerHTML.toLowerCase() < currentRow.innerHTML.toLowerCase()) {
-                        console.log("sort descending");
                         switchRows = true;
                         break;
                     }
@@ -233,8 +235,7 @@ function sortContent(column) {
                 // haven't finished sorting, so keep looping
                 sorting = true;
                 switchCount++;
-            } else if (switchCount === 0 && direction == "ascending") {
-                // nothing to sort in ascending order, so try descending order
+            } else if (switchCount === 0 && direction == "ascending") { // nothing to sort in ascending order, so try descending order
                 direction = "descending";
                 sorting = true;
             }
@@ -242,18 +243,18 @@ function sortContent(column) {
     }
 }
 
+// filter the displayed rows based on type and status
 function filterRows(type, status) {
-    let tableBody = document.querySelector("#contentTable").querySelector("tbody");
 
+    let tableBody = document.querySelector("#contentTable").querySelector("tbody");
     for (let i = 0; i < tableBody.rows.length; i++) {
-        console.log(type);
         const rowType = tableBody.rows[i].cells[2].getAttribute("serverData").trim().toLowerCase();
         const rowStatus = tableBody.rows[i].cells[0].getAttribute("serverData").trim().toLowerCase();
         // all visible
         if (type == "all" && status == "all") {
             tableBody.rows[i].style.display = "table-row";
         } // enable rows of type with corresponding status
-        else if (rowType === type && (rowStatus || status == "all")) {
+        else if (rowType === type && (rowStatus === status || status == "all")) {
             tableBody.rows[i].style.display = "table-row";
         } // enable rows of status with corresponding type
         else if (rowStatus === status && (rowType === type || type == "all")) {
@@ -264,18 +265,16 @@ function filterRows(type, status) {
         }
     }
 }
-
-let nextIndex = 0;
 // Function that handles response sent back from server
-const handleResponse = (xhr, shouldDisplay, update, remove) => {
+const handleResponse = (xhr, add, update, remove) => {
     const content = document.querySelector("#content");
     let table = document.querySelector("#contentTable");
     console.log(xhr.status);
 
-    if (shouldDisplay) {
+    // add content
+    if (add) {
         // Note - empty for 204
         const obj = JSON.parse(xhr.response);
-        console.log(obj);
 
         // display message
         let tableRows = [];
@@ -302,6 +301,7 @@ const handleResponse = (xhr, shouldDisplay, update, remove) => {
                     dropdown.setAttribute("data-toggle", "dropdown");
                     dropdown.id = "";
 
+                    // create ul with li for dropdown
                     let options = document.createElement("ul");
                     options.setAttribute("value", Object.values(obj[element])[j]);
                     options.className += " dropdown-menu";
@@ -324,13 +324,14 @@ const handleResponse = (xhr, shouldDisplay, update, remove) => {
                     complete.setAttribute("value", "complete");
                     options.appendChild(complete);
 
+                    // update table when changing status
                     options.querySelectorAll("li").forEach(function (option) {
                         option.addEventListener('click', function () {
+                            // update button parent visuals
                             this.parentElement.setAttribute("value", this.getAttribute("value"));
                             this.parentElement.parentElement.querySelector("button").className = "rowDropDown btn btn-secondary dropdown-toggle " + this.getAttribute("value");
                             // don't fire if editing table
                             if (document.querySelector("#editTableButton").innerHTML === "Edit Table") {
-                                console.log('this: ' + this);
                                 let newData = {};
                                 let row = document.getElementById(`${element}`);
                                 let cells = row.children;
@@ -342,9 +343,6 @@ const handleResponse = (xhr, shouldDisplay, update, remove) => {
                                 newData.image = cells[4].getAttribute("serverData");
                                 newData.uniqueid = row.id;
 
-                                console.log(cells);
-                                console.log(newData);
-
                                 updateRow(newData);
                             }
                         });
@@ -352,14 +350,13 @@ const handleResponse = (xhr, shouldDisplay, update, remove) => {
                     div.appendChild(dropdown);
                     div.appendChild(options);
 
-                    console.log(div);
                     tableData.appendChild(div);
                 }
-                else if (j === 4) {
+                else if (j === 4) { // handle image
                     tableData.innerHTML = Object.values(obj[element])[j].trim() === ""
                         && Object.values(obj[element])[j]
                         || `<img src="${Object.values(obj[element])[j]}" alt="${Object.values(obj[element])[1]}" class="tableImg">`;
-                } else {
+                } else { // handle text
                     tableData.innerHTML = Object.values(obj[element])[j];
                 }
                 tableData.setAttribute("serverData", Object.values(obj[element])[j]);
@@ -368,8 +365,11 @@ const handleResponse = (xhr, shouldDisplay, update, remove) => {
             let container = document.createElement("div");
             container.className = "deleteButtonContainer";
 
+            // create temp to attach text based icon element to
             let temp = document.createElement("div");
             temp.innerHTML = `<i class="fas fa-trash"></i>`;
+
+            // create trashcan/delete button
             let deleteButton = temp.firstChild;
             deleteButton.className += " deleteButton";
             deleteButton.addEventListener('click', function () {
@@ -384,13 +384,12 @@ const handleResponse = (xhr, shouldDisplay, update, remove) => {
             container.appendChild(deleteButton);
             tr.appendChild(container);
 
-            // attach edit and 
             //attach each row to the table
             table.querySelector("tbody").appendChild(tr);
 
+            // since we added a new element, update nextIndex
             if (element + 1 > nextIndex) {
                 nextIndex = element + 1;
-                console.log("updated next index");
             }
         });
         const getTypeField = document.querySelector('#getTypeField');
@@ -402,7 +401,7 @@ const handleResponse = (xhr, shouldDisplay, update, remove) => {
         const dropDown = tr.querySelector(".rowDropDownWrapper");
         tr.innerHTML = "";
 
-        // fill each row with 5 columns of parsed data
+        // fill each row with columns of parsed data
         for (let j = 0; j < Object.keys(obj).length - 1; j++) {
             // build a cell
             let tableData = document.createElement("td");
@@ -416,11 +415,11 @@ const handleResponse = (xhr, shouldDisplay, update, remove) => {
                 dropDown.querySelector("button").className = "rowDropDown btn btn-secondary dropdown-toggle " + Object.values(obj)[j];
                 tableData.appendChild(dropDown);
             }
-            else if (j === 4) {
+            else if (j === 4) { // handle img
                 tableData.innerHTML = Object.values(obj)[j].trim() === ""
                     && Object.values(obj)[j]
                     || `<img src="${Object.values(obj)[j]}" alt="${Object.values(obj)[1]}" class="tableImg">`;
-            } else {
+            } else { // handle text
                 tableData.innerHTML = Object.values(obj)[j];
             }
             tableData.setAttribute("serverData", Object.values(obj)[j]);
@@ -430,8 +429,11 @@ const handleResponse = (xhr, shouldDisplay, update, remove) => {
         let container = document.createElement("div");
         container.className = "deleteButtonContainer";
 
+        // create temp to attach text based icon element to
         let temp = document.createElement("div");
         temp.innerHTML = `<i class="fas fa-trash"></i>`;
+
+        // create trashcan/delete button
         let deleteButton = temp.firstChild;
         deleteButton.className += " deleteButton";
         deleteButton.addEventListener('click', function () {
@@ -447,7 +449,7 @@ const handleResponse = (xhr, shouldDisplay, update, remove) => {
         container.appendChild(deleteButton);
         tr.appendChild(container);
 
-    } else if (remove) {
+    } else if (remove) { // remove row from table
         const obj = JSON.parse(xhr.response);
         // removed if it hasn't already been removed in updating 
         if (document.getElementById(`${obj.uniqueid}`)) {
@@ -481,24 +483,23 @@ const sendPOST = (e, form) => {
         // Send Request
         xhr.send(data);
     } else {
-        alert("Please save your changes before adding more media!");
+        alert("Please save your changes before adding more media");
     }
     // prevent default browser behavior
     e.preventDefault();
     return false;
 };
 //Send request function for getUsers
-const requestUpdate = (e, form) => {
+const requestUpdate = (e) => {
     const xhr = new XMLHttpRequest();
     const method = 'get';
     const url = '/getContent?index=' + nextIndex;
-    console.log(url);
     xhr.open(method, url);
     xhr.setRequestHeader('Accept', 'application/json');
 
     if (method == 'get') {
         xhr.onload = () => handleResponse(xhr, true, false, false);
-    } else {
+    } else { // don't display head method
         xhr.onload = () => handleResponse(xhr, false, false, false);
     }
 
@@ -524,7 +525,7 @@ const init = () => {
 
     // Set DOM on submit functions
     const addListener = (e) => sendPOST(e, addContentForm);
-    const getListener = (e) => requestUpdate(e, getContentForm);
+    const getListener = (e) => requestUpdate(e);
 
     // Set DOM listeners
     addContentForm.addEventListener('submit', addListener);
